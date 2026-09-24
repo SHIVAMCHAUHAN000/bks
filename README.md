@@ -2,6 +2,8 @@
 
 A small admin panel for importing, organizing, and emailing leads.
 
+See the full [usage guide](docs/USAGE.md) for setup, workflows, Resend, webhooks, and deployment guidance.
+
 ## Run locally
 
 ```bash
