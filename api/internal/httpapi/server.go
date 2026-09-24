@@ -1,0 +1,49 @@
+package httpapi
+
+import (
+	"encoding/json"
+	"net/http"
+
+	"leaddesk/api/internal/lead"
+	"leaddesk/api/internal/mailer"
+)
+
+type Server struct {
+	leads  *lead.Repository
+	mailer mailer.Mailer
+}
+
+func New(leads *lead.Repository, mailer mailer.Mailer) *Server {
+	return &Server{leads: leads, mailer: mailer}
+}
+func (s *Server) Routes() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/health", s.health)
+	mux.HandleFunc("/api/leads", s.leadsHandler)
+	mux.HandleFunc("/api/leads/", s.leadDetailHandler)
+	mux.HandleFunc("/api/import", s.importHandler)
+	mux.HandleFunc("/api/automation/send", s.automationHandler)
+	mux.HandleFunc("/api/dashboard", s.dashboardHandler)
+	mux.HandleFunc("/track/open/", s.trackingHandler)
+	return cors(mux)
+}
+func cors(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+func writeJSON(w http.ResponseWriter, value any, status int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(value)
+}
+func decodeJSON(r *http.Request, value any) error { return json.NewDecoder(r.Body).Decode(value) }
+func (s *Server) health(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, map[string]string{"status": "ok"}, http.StatusOK)
+}
