@@ -9,13 +9,15 @@ import (
 )
 
 type Server struct {
-	leads      *lead.Repository
-	mailer     mailer.Mailer
-	corsOrigin string
+	leads         *lead.Repository
+	mailer        mailer.Mailer
+	inbound       mailer.ReceivedEmailReader
+	corsOrigin    string
+	webhookSecret string
 }
 
-func New(leads *lead.Repository, mailer mailer.Mailer, corsOrigin string) *Server {
-	return &Server{leads: leads, mailer: mailer, corsOrigin: corsOrigin}
+func New(leads *lead.Repository, mailer mailer.Mailer, inbound mailer.ReceivedEmailReader, webhookSecret, corsOrigin string) *Server {
+	return &Server{leads: leads, mailer: mailer, inbound: inbound, webhookSecret: webhookSecret, corsOrigin: corsOrigin}
 }
 func (s *Server) Routes() http.Handler {
 	mux := http.NewServeMux()
@@ -25,6 +27,7 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/api/import", s.importHandler)
 	mux.HandleFunc("/api/automation/send", s.automationHandler)
 	mux.HandleFunc("/api/dashboard", s.dashboardHandler)
+	mux.HandleFunc("/webhooks/resend", s.resendWebhookHandler)
 	mux.HandleFunc("/track/open/", s.trackingHandler)
 	return cors(mux, s.corsOrigin)
 }

@@ -54,16 +54,31 @@ func (m *Resend) Send(lead lead.Lead, subject, body string) error {
 
 // ReceivedText fetches the body from Resend because email.received webhooks contain metadata only.
 func (m *Resend) ReceivedText(ctx context.Context, emailID string) (string, error) {
-	if m.apiKey == "" { return "", fmt.Errorf("RESEND_API_KEY is required to retrieve inbound email content") }
+	if m.apiKey == "" {
+		return "", fmt.Errorf("RESEND_API_KEY is required to retrieve inbound email content")
+	}
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://api.resend.com/emails/receiving/"+emailID, nil)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 	request.Header.Set("Authorization", "Bearer "+m.apiKey)
 	response, err := http.DefaultClient.Do(request)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 	defer response.Body.Close()
-	if response.StatusCode >= 300 { return "", fmt.Errorf("resend returned %s while retrieving received email", response.Status) }
-	var received struct { Text string `json:"text"`; HTML string `json:"html"` }
-	if err := json.NewDecoder(response.Body).Decode(&received); err != nil { return "", err }
-	if received.Text != "" { return received.Text, nil }
+	if response.StatusCode >= 300 {
+		return "", fmt.Errorf("resend returned %s while retrieving received email", response.Status)
+	}
+	var received struct {
+		Text string `json:"text"`
+		HTML string `json:"html"`
+	}
+	if err := json.NewDecoder(response.Body).Decode(&received); err != nil {
+		return "", err
+	}
+	if received.Text != "" {
+		return received.Text, nil
+	}
 	return received.HTML, nil
 }

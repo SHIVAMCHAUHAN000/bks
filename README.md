@@ -23,6 +23,15 @@ The API loads `api/.env` automatically. Copy or update [api/.env.example](/Users
 
 Set `NEXT_PUBLIC_API_URL` in `web/.env.local` to the Go API URL. In a deployment, set the API's `CORS_ALLOWED_ORIGIN` to the exact frontend origin.
 
+## Resend webhooks
+
+The API receives signed Resend callbacks at `POST /webhooks/resend`. After deploying the API on a public HTTPS URL, create a webhook in Resend with:
+
+- Endpoint: `https://your-api.example.com/webhooks/resend`
+- Events: `email.delivered`, `email.bounced`, `email.opened`, and `email.received`
+
+Copy the generated `whsec_…` signing secret to `RESEND_WEBHOOK_SECRET` in `api/.env`. The endpoint verifies the Svix signature and timestamp, ignores duplicate deliveries, records delivery/bounce/open activity, marks bounced leads invalid, and retrieves inbound reply text before recording it as a reply.
+
 ## Included in v1
 
 - Leads with email/phone duplicate protection, categories, state, and follow-up counters

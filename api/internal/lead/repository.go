@@ -114,35 +114,57 @@ func (r *Repository) Stats() (Stats, error) {
 // ProcessWebhook writes an activity record once, even when Resend retries the same Svix message.
 func (r *Repository) ProcessWebhook(receiptID string, event WebhookEvent) (bool, error) {
 	tx, err := r.db.Begin()
-	if err != nil { return false, err }
+	if err != nil {
+		return false, err
+	}
 	defer tx.Rollback()
 	result, err := tx.Exec(`INSERT OR IGNORE INTO webhook_receipts(id,event_type) VALUES(?,?)`, receiptID, event.Type)
-	if err != nil { return false, err }
+	if err != nil {
+		return false, err
+	}
 	inserted, _ := result.RowsAffected()
-	if inserted == 0 { return false, tx.Commit() }
+	if inserted == 0 {
+		return false, tx.Commit()
+	}
 
 	address := event.Recipient
-	if event.Type == "email.received" { address = event.Sender }
+	if event.Type == "email.received" {
+		address = event.Sender
+	}
 	var leadID int64
 	err = tx.QueryRow(`SELECT id FROM leads WHERE email = ?`, strings.ToLower(address)).Scan(&leadID)
-	if err == sql.ErrNoRows { return false, tx.Commit() }
-	if err != nil { return false, err }
+	if err == sql.ErrNoRows {
+		return false, tx.Commit()
+	}
+	if err != nil {
+		return false, err
+	}
 
 	kind, content := strings.TrimPrefix(event.Type, "email."), event.Content
 	if event.Type == "email.received" {
 		kind = "reply"
-		if _, err = tx.Exec(`UPDATE leads SET replied=1 WHERE id=?`, leadID); err != nil { return false, err }
+		if _, err = tx.Exec(`UPDATE leads SET replied=1 WHERE id=?`, leadID); err != nil {
+			return false, err
+		}
 	}
 	if event.Type == "email.bounced" {
 		content = strings.TrimSpace(strings.Join([]string{event.BounceType, event.BounceMessage}, ": "))
-		if _, err = tx.Exec(`UPDATE leads SET is_invalid=1 WHERE id=?`, leadID); err != nil { return false, err }
+		if _, err = tx.Exec(`UPDATE leads SET is_invalid=1 WHERE id=?`, leadID); err != nil {
+			return false, err
+		}
 	}
 	if event.Type == "email.opened" {
-		if _, err = tx.Exec(`UPDATE leads SET is_opened=1 WHERE id=?`, leadID); err != nil { return false, err }
+		if _, err = tx.Exec(`UPDATE leads SET is_opened=1 WHERE id=?`, leadID); err != nil {
+			return false, err
+		}
 	}
-	if content == "" { content = "Resend reported " + kind + "." }
+	if content == "" {
+		content = "Resend reported " + kind + "."
+	}
 	_, err = tx.Exec(`INSERT INTO email_events(lead_id,kind,subject,content) VALUES(?,?,?,?)`, leadID, kind, event.Subject, content)
-	if err != nil { return false, err }
+	if err != nil {
+		return false, err
+	}
 	return true, tx.Commit()
 }
 func scanLeads(rows *sql.Rows) ([]Lead, error) {
