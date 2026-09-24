@@ -12,6 +12,10 @@ type Lead struct {
 	IsOpened      bool   `json:"isOpened"`
 	AnyFollowup   bool   `json:"anyFollowup"`
 	FollowupCount int    `json:"followupCount"`
+	FollowupLimit int    `json:"followupLimit"`
+	LastFollowupAt string `json:"lastFollowupAt"`
+	NextFollowupAt string `json:"nextFollowupAt"`
+	FollowupPaused bool `json:"followupPaused"`
 	Replied       bool   `json:"replied"`
 	CreatedAt     string `json:"createdAt"`
 }
@@ -35,6 +39,8 @@ type Campaign struct {
 	Mode     string `json:"mode"`
 	Before   string `json:"before"`
 	Category string `json:"category"`
+	FollowupDelayDays int `json:"followupDelayDays"`
+	MaxFollowups int `json:"maxFollowups"`
 }
 
 type Event struct {

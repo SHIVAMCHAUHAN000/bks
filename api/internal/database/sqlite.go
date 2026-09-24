@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"os"
 	"path/filepath"
+	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -29,7 +30,8 @@ func migrate(db *sql.DB) error {
 			id INTEGER PRIMARY KEY, name TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '',
 			phone TEXT NOT NULL DEFAULT '', category TEXT NOT NULL DEFAULT '', subcategory TEXT NOT NULL DEFAULT '',
 			mail_sent INTEGER DEFAULT 0, is_invalid INTEGER DEFAULT 0, is_opened INTEGER DEFAULT 0,
-			any_followup INTEGER DEFAULT 0, followup_count INTEGER DEFAULT 0, replied INTEGER DEFAULT 0,
+			any_followup INTEGER DEFAULT 0, followup_count INTEGER DEFAULT 0, followup_limit INTEGER DEFAULT 3,
+			last_followup_at TEXT, next_followup_at TEXT, followup_paused INTEGER DEFAULT 0, replied INTEGER DEFAULT 0,
 			created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
 		CREATE UNIQUE INDEX IF NOT EXISTS unique_lead_email ON leads(email) WHERE email != '';
@@ -44,5 +46,23 @@ func migrate(db *sql.DB) error {
 			id TEXT PRIMARY KEY, event_type TEXT NOT NULL, received_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
 	`)
+	if err != nil { return err }
+	for _, column := range []string{"followup_limit INTEGER DEFAULT 3", "last_followup_at TEXT", "next_followup_at TEXT", "followup_paused INTEGER DEFAULT 0"} {
+		if err := addColumnIfMissing(db, "leads", column); err != nil { return err }
+	}
+	return nil
+}
+
+func addColumnIfMissing(db *sql.DB, table, definition string) error {
+	name := strings.Fields(definition)[0]
+	rows, err := db.Query(`PRAGMA table_info(` + table + `)`)
+	if err != nil { return err }
+	defer rows.Close()
+	for rows.Next() {
+		var cid, notNull, primaryKey int; var column, dataType string; var defaultValue any
+		if err := rows.Scan(&cid, &column, &dataType, &notNull, &defaultValue, &primaryKey); err != nil { return err }
+		if column == name { return nil }
+	}
+	_, err = db.Exec(`ALTER TABLE ` + table + ` ADD COLUMN ` + definition)
 	return err
 }

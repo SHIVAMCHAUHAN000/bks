@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -15,6 +16,8 @@ type Config struct {
 	MailReplyTo         string
 	PublicAPIURL        string
 	CORSOrigin          string
+	DefaultFollowupDelayDays int
+	DefaultFollowupLimit     int
 }
 
 func Load() Config {
@@ -30,6 +33,8 @@ func Load() Config {
 		MailReplyTo:         os.Getenv("MAIL_REPLY_TO"),
 		PublicAPIURL:        envOr("PUBLIC_API_URL", "http://localhost:8080"),
 		CORSOrigin:          envOr("CORS_ALLOWED_ORIGIN", "http://localhost:3000"),
+		DefaultFollowupDelayDays: positiveIntEnv("DEFAULT_FOLLOWUP_DELAY_DAYS", 3),
+		DefaultFollowupLimit:     positiveIntEnv("DEFAULT_FOLLOWUP_LIMIT", 3),
 	}
 }
 
@@ -39,3 +44,5 @@ func envOr(key, fallback string) string {
 	}
 	return fallback
 }
+
+func positiveIntEnv(key string, fallback int) int { value, err := strconv.Atoi(os.Getenv(key)); if err != nil || value < 1 { return fallback }; return value }
