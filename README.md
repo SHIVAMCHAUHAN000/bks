@@ -21,6 +21,8 @@ Set `RESEND_API_KEY` and `MAIL_FROM` to send real emails. Without them, sends ar
 
 The API loads `api/.env` automatically. Copy or update [api/.env.example](/Users/ashparsh/bks/api/.env.example) with your Resend key and verified sender address; the real `.env` file is ignored by Git.
 
+Set `NEXT_PUBLIC_API_URL` in `web/.env.local` to the Go API URL. In a deployment, set the API's `CORS_ALLOWED_ORIGIN` to the exact frontend origin.
+
 ## Included in v1
 
 - Leads with email/phone duplicate protection, categories, state, and follow-up counters

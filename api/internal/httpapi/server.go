@@ -9,12 +9,13 @@ import (
 )
 
 type Server struct {
-	leads  *lead.Repository
-	mailer mailer.Mailer
+	leads      *lead.Repository
+	mailer     mailer.Mailer
+	corsOrigin string
 }
 
-func New(leads *lead.Repository, mailer mailer.Mailer) *Server {
-	return &Server{leads: leads, mailer: mailer}
+func New(leads *lead.Repository, mailer mailer.Mailer, corsOrigin string) *Server {
+	return &Server{leads: leads, mailer: mailer, corsOrigin: corsOrigin}
 }
 func (s *Server) Routes() http.Handler {
 	mux := http.NewServeMux()
@@ -25,11 +26,11 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/api/automation/send", s.automationHandler)
 	mux.HandleFunc("/api/dashboard", s.dashboardHandler)
 	mux.HandleFunc("/track/open/", s.trackingHandler)
-	return cors(mux)
+	return cors(mux, s.corsOrigin)
 }
-func cors(next http.Handler) http.Handler {
+func cors(next http.Handler, origin string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.Header().Set("Access-Control-Allow-Origin", origin)
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)

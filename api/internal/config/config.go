@@ -12,6 +12,7 @@ type Config struct {
 	ResendAPIKey string
 	MailFrom     string
 	PublicAPIURL string
+	CORSOrigin   string
 }
 
 func Load() Config {
@@ -24,6 +25,7 @@ func Load() Config {
 		ResendAPIKey: os.Getenv("RESEND_API_KEY"),
 		MailFrom:     os.Getenv("MAIL_FROM"),
 		PublicAPIURL: envOr("PUBLIC_API_URL", "http://localhost:8080"),
+		CORSOrigin:   envOr("CORS_ALLOWED_ORIGIN", "http://localhost:3000"),
 	}
 }
 

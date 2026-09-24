@@ -17,7 +17,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	server := httpapi.New(lead.NewRepository(db), mailer.NewResend(cfg.ResendAPIKey, cfg.MailFrom, cfg.PublicAPIURL))
+	server := httpapi.New(lead.NewRepository(db), mailer.NewResend(cfg.ResendAPIKey, cfg.MailFrom, cfg.PublicAPIURL), cfg.CORSOrigin)
 	log.Printf("LeadDesk API listening at :%s", cfg.Port)
 	log.Fatal(http.ListenAndServe(":"+cfg.Port, server.Routes()))
 }
