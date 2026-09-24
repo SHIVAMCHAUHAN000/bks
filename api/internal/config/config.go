@@ -12,6 +12,7 @@ type Config struct {
 	ResendAPIKey        string
 	ResendWebhookSecret string
 	MailFrom            string
+	MailReplyTo         string
 	PublicAPIURL        string
 	CORSOrigin          string
 }
@@ -26,6 +27,7 @@ func Load() Config {
 		ResendAPIKey:        os.Getenv("RESEND_API_KEY"),
 		ResendWebhookSecret: os.Getenv("RESEND_WEBHOOK_SECRET"),
 		MailFrom:            os.Getenv("MAIL_FROM"),
+		MailReplyTo:         os.Getenv("MAIL_REPLY_TO"),
 		PublicAPIURL:        envOr("PUBLIC_API_URL", "http://localhost:8080"),
 		CORSOrigin:          envOr("CORS_ALLOWED_ORIGIN", "http://localhost:3000"),
 	}

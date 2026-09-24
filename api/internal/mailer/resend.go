@@ -21,11 +21,12 @@ type ReceivedEmailReader interface {
 type Resend struct {
 	apiKey       string
 	from         string
+	replyTo      string
 	publicAPIURL string
 }
 
-func NewResend(apiKey, from, publicAPIURL string) *Resend {
-	return &Resend{apiKey: apiKey, from: from, publicAPIURL: strings.TrimSuffix(publicAPIURL, "/")}
+func NewResend(apiKey, from, replyTo, publicAPIURL string) *Resend {
+	return &Resend{apiKey: apiKey, from: from, replyTo: replyTo, publicAPIURL: strings.TrimSuffix(publicAPIURL, "/")}
 }
 
 func (m *Resend) Send(lead lead.Lead, subject, body string) error {
@@ -34,8 +35,12 @@ func (m *Resend) Send(lead lead.Lead, subject, body string) error {
 		return nil
 	}
 	html := strings.ReplaceAll(body, "\n", "<br>") + fmt.Sprintf(`<img src="%s/track/open/%d" width="1" height="1" alt=""/>`, m.publicAPIURL, lead.ID)
-	payload, _ := json.Marshal(map[string]any{"from": m.from, "to": []string{lead.Email}, "subject": subject, "html": html})
-	request, err := http.NewRequestWithContext(context.Background(), http.MethodPost, "https://api.resend.com/emails", bytes.NewReader(payload))
+	payload := map[string]any{"from": m.from, "to": []string{lead.Email}, "subject": subject, "html": html}
+	if m.replyTo != "" {
+		payload["reply_to"] = []string{m.replyTo}
+	}
+	payloadBytes, _ := json.Marshal(payload)
+	request, err := http.NewRequestWithContext(context.Background(), http.MethodPost, "https://api.resend.com/emails", bytes.NewReader(payloadBytes))
 	if err != nil {
 		return err
 	}

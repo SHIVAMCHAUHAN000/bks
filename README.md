@@ -30,7 +30,7 @@ The API receives signed Resend callbacks at `POST /webhooks/resend`. After deplo
 - Endpoint: `https://your-api.example.com/webhooks/resend`
 - Events: `email.delivered`, `email.bounced`, `email.opened`, and `email.received`
 
-Copy the generated `whsec_…` signing secret to `RESEND_WEBHOOK_SECRET` in `api/.env`. The endpoint verifies the Svix signature and timestamp, ignores duplicate deliveries, records delivery/bounce/open activity, marks bounced leads invalid, and retrieves inbound reply text before recording it as a reply.
+Copy the generated `whsec_…` signing secret to `RESEND_WEBHOOK_SECRET` in `api/.env`. Set `MAIL_REPLY_TO` to your Resend inbound address (or a receiving-enabled custom-domain address) so campaign replies arrive there. The endpoint verifies the Svix signature and timestamp, ignores duplicate deliveries, records delivery/bounce/open activity, marks bounced leads invalid, and retrieves inbound reply text before recording it as a reply.
 
 ## Included in v1
 
