@@ -1,4 +1,4 @@
-# LeadDesk
+# Automation Tool
 
 A small admin panel for importing, organizing, and emailing leads.
 
@@ -18,10 +18,10 @@ npm install
 npm run dev
 ```
 
-The API runs on `http://localhost:8080` and uses `api/data/leaddesk.db` (SQLite).
+The API runs on `http://localhost:8080` and uses `api/data/automation_tool.db` (SQLite).
 Set `RESEND_API_KEY` and `MAIL_FROM` to send real emails. Without them, sends are recorded as `simulated` in local development.
 
-The API loads `api/.env` automatically. Copy or update [api/.env.example](/Users/ashparsh/bks/api/.env.example) with your Resend key and verified sender address; the real `.env` file is ignored by Git.
+The API loads `api/.env` automatically. Copy or update [api/.env.example](api/.env.example) with your Resend key and verified sender address; the real `.env` file is ignored by Git.
 
 Set `NEXT_PUBLIC_API_URL` in `web/.env.local` to the Go API URL. In a deployment, set the API's `CORS_ALLOWED_ORIGIN` to the exact frontend origin.
 

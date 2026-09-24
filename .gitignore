@@ -2,3 +2,7 @@ web/node_modules/
 web/.next/
 api/data/
 api/api
+*.env*
+.env*
+api/.env*
+web/.env*

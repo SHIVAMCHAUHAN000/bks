@@ -22,14 +22,17 @@ type Config struct {
 
 func Load() Config {
 	// A missing .env is fine in deployments, where the OS injects environment variables.
+	_ = godotenv.Load(".env.local")
 	_ = godotenv.Load()
+	_ = godotenv.Load("../.env.local")
+	_ = godotenv.Load("../.env")
 
 	return Config{
 		Port:                envOr("PORT", "8080"),
-		DatabasePath:        envOr("DATABASE_PATH", "data/leaddesk.db"),
+		DatabasePath:        envOr("DATABASE_PATH", "data/automation_tool.db"),
 		ResendAPIKey:        os.Getenv("RESEND_API_KEY"),
 		ResendWebhookSecret: os.Getenv("RESEND_WEBHOOK_SECRET"),
-		MailFrom:            os.Getenv("MAIL_FROM"),
+		MailFrom:            envOr("MAIL_FROM", "onboarding@resend.dev"),
 		MailReplyTo:         os.Getenv("MAIL_REPLY_TO"),
 		PublicAPIURL:        envOr("PUBLIC_API_URL", "http://localhost:8080"),
 		CORSOrigin:          envOr("CORS_ALLOWED_ORIGIN", "http://localhost:3000"),

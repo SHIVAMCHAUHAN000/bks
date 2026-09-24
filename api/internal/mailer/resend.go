@@ -5,10 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
-	"leaddesk/api/internal/lead"
+	"automationtool/api/internal/lead"
 )
 
 type Mailer interface {
@@ -52,7 +53,8 @@ func (m *Resend) Send(lead lead.Lead, subject, body string) error {
 	}
 	defer response.Body.Close()
 	if response.StatusCode >= 300 {
-		return fmt.Errorf("resend returned %s", response.Status)
+		respBody, _ := io.ReadAll(response.Body)
+		return fmt.Errorf("resend returned %s: %s", response.Status, strings.TrimSpace(string(respBody)))
 	}
 	return nil
 }

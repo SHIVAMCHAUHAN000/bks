@@ -1,7 +1,7 @@
 package httpapi
 
 import (
-	"leaddesk/api/internal/lead"
+	"automationtool/api/internal/lead"
 	"net/http"
 	"strconv"
 	"strings"

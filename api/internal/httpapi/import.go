@@ -3,7 +3,7 @@ package httpapi
 import (
 	"encoding/csv"
 	"io"
-	"leaddesk/api/internal/lead"
+	"automationtool/api/internal/lead"
 	"net/http"
 	"strings"
 )

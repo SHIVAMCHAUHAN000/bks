@@ -1,6 +1,6 @@
-# LeadDesk usage guide
+# Automation Tool usage guide
 
-LeadDesk is a small admin application for importing leads, categorizing them, sending initial and follow-up campaigns, and recording email activity.
+Automation Tool is a small admin application for importing leads, categorizing them, sending initial and follow-up campaigns, and recording email activity.
 
 ## Start locally
 
@@ -20,7 +20,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. The API defaults to `http://localhost:8080` and the local SQLite database is stored in `api/data/leaddesk.db`.
+Open `http://localhost:3000`. The API defaults to `http://localhost:8080` and the local SQLite database is stored in `api/data/automation_tool.db`.
 
 ## Configuration
 
@@ -28,7 +28,7 @@ The API reads `api/.env` at startup. Do not commit this file.
 
 ```env
 PORT=8080
-DATABASE_PATH=data/leaddesk.db
+DATABASE_PATH=data/automation_tool.db
 PUBLIC_API_URL=http://localhost:8080
 CORS_ALLOWED_ORIGIN=http://localhost:3000
 
@@ -122,7 +122,7 @@ Select these events:
 
 Copy the generated `whsec_...` signing secret to `RESEND_WEBHOOK_SECRET` and restart the API.
 
-The endpoint validates the raw payload and Svix headers before processing it. Resend retries are safe: each `svix-id` is stored once. Delivered and opened events are written to timeline history. A bounced email is written to history and automatically marks the lead invalid. For received emails, LeadDesk fetches the inbound message text from Resend and saves it as a reply.
+The endpoint validates the raw payload and Svix headers before processing it. Resend retries are safe: each `svix-id` is stored once. Delivered and opened events are written to timeline history. A bounced email is written to history and automatically marks the lead invalid. For received emails, Automation Tool fetches the inbound message text from Resend and saves it as a reply.
 
 ## Deployment checklist
 
@@ -131,7 +131,7 @@ The endpoint validates the raw payload and Svix headers before processing it. Re
 - Set `NEXT_PUBLIC_API_URL` to the deployed API URL before building the Next app.
 - Set `CORS_ALLOWED_ORIGIN` to the exact deployed frontend origin.
 - Configure `MAIL_REPLY_TO` and the Resend webhook before expecting automatic replies.
-- Back up `api/data/leaddesk.db`; it is local SQLite storage. Move to Supabase/Postgres before multi-user or production-scale use.
+- Back up `api/data/automation_tool.db`; it is local SQLite storage. Move to Supabase/Postgres before multi-user or production-scale use.
 
 ## API reference
 

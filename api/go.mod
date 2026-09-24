@@ -1,4 +1,4 @@
-module leaddesk/api
+module automationtool/api
 
 go 1.25.0
 

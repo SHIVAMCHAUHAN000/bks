@@ -8,8 +8,8 @@ import (
 	"net/mail"
 	"strings"
 
-	"leaddesk/api/internal/lead"
-	"leaddesk/api/internal/webhook"
+	"automationtool/api/internal/lead"
+	"automationtool/api/internal/webhook"
 )
 
 const maxWebhookBody = 1 << 20

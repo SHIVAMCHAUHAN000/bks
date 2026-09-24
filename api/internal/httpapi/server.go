@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"leaddesk/api/internal/lead"
-	"leaddesk/api/internal/mailer"
+	"automationtool/api/internal/lead"
+	"automationtool/api/internal/mailer"
 )
 
 type Server struct {
@@ -34,7 +34,8 @@ func (s *Server) Routes() http.Handler {
 func cors(next http.Handler, origin string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
 			return

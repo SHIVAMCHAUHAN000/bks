@@ -45,7 +45,7 @@ export default function Home() {
   async function changed(nextNotice: string) { setNotice(nextNotice); await refresh(); }
 
   return <main>
-    <nav><div className="brand">lead<span>desk</span></div><NavButton active={tab === 'leads'} onClick={() => setTab('leads')}>Leads</NavButton><NavButton active={tab === 'import'} onClick={() => setTab('import')}>Import</NavButton><NavButton active={tab === 'automation'} onClick={() => setTab('automation')}>Automation</NavButton></nav>
+    <nav><div className="brand">automation<span>tool</span></div><NavButton active={tab === 'leads'} onClick={() => setTab('leads')}>Leads</NavButton><NavButton active={tab === 'import'} onClick={() => setTab('import')}>Import</NavButton><NavButton active={tab === 'automation'} onClick={() => setTab('automation')}>Automation</NavButton></nav>
     <section className={selectedLead ? 'content details-visible' : 'content'}>
       <header><div><p className="eyebrow">OPERATIONS</p><h1>{tab === 'leads' ? 'Your lead pipeline' : tab === 'import' ? 'Bring in new leads' : 'Email automation'}</h1></div><p className="notice">{notice}</p></header>
       {error && <div className="error-banner">{error}<button className="icon-button" onClick={() => setError('')} aria-label="Dismiss error">×</button></div>}
