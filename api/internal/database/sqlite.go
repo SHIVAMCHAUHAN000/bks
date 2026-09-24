@@ -40,6 +40,9 @@ func migrate(db *sql.DB) error {
 			created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY(lead_id) REFERENCES leads(id)
 		);
+		CREATE TABLE IF NOT EXISTS webhook_receipts (
+			id TEXT PRIMARY KEY, event_type TEXT NOT NULL, received_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
 	`)
 	return err
 }

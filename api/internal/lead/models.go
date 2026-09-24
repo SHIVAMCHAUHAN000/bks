@@ -53,3 +53,15 @@ type Stats struct {
 	Replied int `json:"replied"`
 	Invalid int `json:"invalid"`
 }
+
+// WebhookEvent is the normalized subset of a Resend event used by the application.
+type WebhookEvent struct {
+	Type          string
+	Sender        string
+	Recipient     string
+	Subject       string
+	MessageID     string
+	Content       string
+	BounceType    string
+	BounceMessage string
+}
