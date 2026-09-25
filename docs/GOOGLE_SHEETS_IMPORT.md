@@ -1,6 +1,6 @@
 # Google Sheets Import and Configuration
 
-This guide explains how to import leads from Google Sheets into LeadDesk and how to configure the application for local or deployed use.
+This guide explains how to import leads from Google Sheets into Automation Tool and how to configure the application for local or deployed use.
 
 ## Required sheet format
 
@@ -33,7 +33,7 @@ At least one of `email` or `phone` must exist in the header row. Each data row m
 4. Select **Comma-separated values (.csv)** as the format.
 5. Click **Publish** and confirm.
 6. Copy the published URL.
-7. In LeadDesk, open **Import**, paste the URL into **Published Google Sheets CSV URL**, and click **Import leads**.
+7. In Automation Tool, open **Import**, paste the URL into **Published Google Sheets CSV URL**, and click **Import leads**.
 
 The published sheet must be accessible without a Google login. A private share link or a normal browser edit URL can return an HTML page instead of CSV data.
 
@@ -89,7 +89,7 @@ Create `api/.env`:
 
 ```env
 PORT=8080
-DATABASE_PATH=data/leaddesk.db
+DATABASE_PATH=data/automation_tool.db
 PUBLIC_API_URL=http://localhost:8080
 CORS_ALLOWED_ORIGIN=http://localhost:3000
 
@@ -151,7 +151,7 @@ For a deployed frontend and API:
 # API
 PUBLIC_API_URL=https://api.example.com
 CORS_ALLOWED_ORIGIN=https://app.example.com
-DATABASE_PATH=data/leaddesk.db
+DATABASE_PATH=data/automation_tool.db
 
 # Frontend build environment
 NEXT_PUBLIC_API_URL=https://api.example.com
@@ -177,7 +177,7 @@ The first row does not contain `email` or `phone`. Rename the headers to exactly
 
 ### Import says zero leads were added
 
-Check that each row has an email or phone value. Also check whether those values already exist in LeadDesk. Duplicate email and phone values are intentionally skipped.
+Check that each row has an email or phone value. Also check whether those values already exist in Automation Tool. Duplicate email and phone values are intentionally skipped.
 
 ### The browser shows a network or CORS error
 
@@ -188,7 +188,7 @@ Check that:
 - The API was restarted after changing environment variables.
 - The browser can reach `/health` on the API URL.
 
-### The URL works in a browser but not in LeadDesk
+### The URL works in a browser but not in Automation Tool
 
 A browser may be logged into Google while the API is not. Test the URL in a private browser window or with `curl`. The URL must return CSV without authentication.
 
