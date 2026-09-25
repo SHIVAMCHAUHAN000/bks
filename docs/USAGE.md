@@ -56,6 +56,8 @@ An invalid email format is saved but flagged as invalid. Invalid leads are exclu
 
 ### Import leads
 
+See the detailed [Google Sheets Import and Configuration](GOOGLE_SHEETS_IMPORT.md) guide for publishing, required fields, environment variables, API examples, and troubleshooting.
+
 Use the **Import** tab to either:
 
 1. Paste CSV content, or
