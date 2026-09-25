@@ -1,23 +1,23 @@
 package lead
 
 type Lead struct {
-	ID            int64  `json:"id"`
-	Name          string `json:"name"`
-	Email         string `json:"email"`
-	Phone         string `json:"phone"`
-	Category      string `json:"category"`
-	Subcategory   string `json:"subcategory"`
-	MailSent      bool   `json:"mailSent"`
-	IsInvalid     bool   `json:"isInvalid"`
-	IsOpened      bool   `json:"isOpened"`
-	AnyFollowup   bool   `json:"anyFollowup"`
-	FollowupCount int    `json:"followupCount"`
-	FollowupLimit int    `json:"followupLimit"`
+	ID             int64  `json:"id"`
+	Name           string `json:"name"`
+	Email          string `json:"email"`
+	Phone          string `json:"phone"`
+	Category       string `json:"category"`
+	Subcategory    string `json:"subcategory"`
+	MailSent       bool   `json:"mailSent"`
+	IsInvalid      bool   `json:"isInvalid"`
+	IsOpened       bool   `json:"isOpened"`
+	AnyFollowup    bool   `json:"anyFollowup"`
+	FollowupCount  int    `json:"followupCount"`
+	FollowupLimit  int    `json:"followupLimit"`
 	LastFollowupAt string `json:"lastFollowupAt"`
 	NextFollowupAt string `json:"nextFollowupAt"`
-	FollowupPaused bool `json:"followupPaused"`
-	Replied       bool   `json:"replied"`
-	CreatedAt     string `json:"createdAt"`
+	FollowupPaused bool   `json:"followupPaused"`
+	Replied        bool   `json:"replied"`
+	CreatedAt      string `json:"createdAt"`
 }
 
 type Input struct {
@@ -34,13 +34,14 @@ type ListFilter struct {
 }
 
 type Campaign struct {
-	Subject  string `json:"subject"`
-	Body     string `json:"body"`
-	Mode     string `json:"mode"`
-	Before   string `json:"before"`
-	Category string `json:"category"`
-	FollowupDelayDays int `json:"followupDelayDays"`
-	MaxFollowups int `json:"maxFollowups"`
+	Subject           string `json:"subject"`
+	Body              string `json:"body"`
+	Mode              string `json:"mode"`
+	Before            string `json:"before"`
+	Category          string `json:"category"`
+	NoFollowup        bool   `json:"noFollowup"`
+	FollowupDelayDays int    `json:"followupDelayDays"`
+	MaxFollowups      int    `json:"maxFollowups"`
 }
 
 type Event struct {

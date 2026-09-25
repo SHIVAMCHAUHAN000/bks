@@ -2,9 +2,11 @@ package httpapi
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"leaddesk/api/internal/lead"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -19,23 +21,38 @@ func (s *Server) importHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	raw := input.CSV
 	if input.URL != "" {
-		response, err := http.Get(input.URL)
+		sheetURL, err := googleSheetsCSVURL(input.URL)
 		if err != nil {
-			writeJSON(w, map[string]string{"error": "could not download sheet"}, 400)
+			writeJSON(w, map[string]string{"error": err.Error()}, 400)
+			return
+		}
+		response, err := http.Get(sheetURL)
+		if err != nil {
+			writeJSON(w, map[string]string{"error": "could not download Google Sheet CSV"}, 400)
 			return
 		}
 		defer response.Body.Close()
+		if response.StatusCode < 200 || response.StatusCode >= 300 {
+			writeJSON(w, map[string]string{"error": fmt.Sprintf("Google Sheets returned HTTP %d; publish the sheet to the web as CSV and try again", response.StatusCode)}, 400)
+			return
+		}
 		data, _ := io.ReadAll(io.LimitReader(response.Body, 10<<20))
 		raw = string(data)
 	}
 	records, err := csv.NewReader(strings.NewReader(raw)).ReadAll()
 	if err != nil || len(records) < 2 {
-		writeJSON(w, map[string]string{"error": "provide a CSV with headers and a row"}, 400)
+		writeJSON(w, map[string]string{"error": "provide a CSV with a header row and at least one data row; Google Sheets must be published as CSV"}, 400)
 		return
 	}
 	headers := map[string]int{}
 	for i, name := range records[0] {
 		headers[strings.ToLower(strings.TrimSpace(name))] = i
+	}
+	if _, hasEmail := headers["email"]; !hasEmail {
+		if _, hasPhone := headers["phone"]; !hasPhone {
+			writeJSON(w, map[string]string{"error": "CSV must include an email or phone column"}, 400)
+			return
+		}
 	}
 	value := func(row []string, name string) string {
 		if index, ok := headers[name]; ok && index < len(row) {
@@ -54,4 +71,24 @@ func (s *Server) importHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	writeJSON(w, map[string]int{"imported": imported, "rows": len(records) - 1}, 200)
+}
+
+func googleSheetsCSVURL(rawURL string) (string, error) {
+	parsed, err := url.Parse(strings.TrimSpace(rawURL))
+	if err != nil || parsed.Scheme != "https" || parsed.Host == "" {
+		return "", fmt.Errorf("Google Sheet URL must be a valid HTTPS URL")
+	}
+	if parsed.Host != "docs.google.com" || !strings.HasPrefix(parsed.Path, "/spreadsheets/d/") || strings.Contains(parsed.Path, "/d/e/") {
+		return parsed.String(), nil
+	}
+	parts := strings.Split(strings.TrimPrefix(parsed.Path, "/spreadsheets/d/"), "/")
+	if len(parts) == 0 || parts[0] == "" {
+		return "", fmt.Errorf("could not find a spreadsheet ID in the Google Sheet URL")
+	}
+	query := url.Values{}
+	if gid := parsed.Query().Get("gid"); gid != "" {
+		query.Set("gid", gid)
+	}
+	query.Set("format", "csv")
+	return "https://docs.google.com/spreadsheets/d/" + parts[0] + "/export?" + query.Encode(), nil
 }
