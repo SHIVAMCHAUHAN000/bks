@@ -45,6 +45,13 @@ func (r *Repository) CampaignTargets(c Campaign) ([]Lead, error) {
 	} else {
 		where += ` AND mail_sent=0`
 	}
+	if c.NoFollowup {
+		where += ` AND any_followup=0`
+	}
+	if c.Mode == "followup" && c.MaxFollowups > 0 {
+		where += ` AND followup_count < ?`
+		args = append(args, c.MaxFollowups)
+	}
 	if c.Category != "" {
 		where += ` AND category=?`
 		args = append(args, c.Category)

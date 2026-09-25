@@ -39,7 +39,11 @@ export default function Home() {
   }
   async function sendCampaign(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    try { const result = await api.sendCampaign(Object.fromEntries(new FormData(event.currentTarget))); setNotice(`Sent ${result.sent} email(s)`); await refresh(); }
+    const form = new FormData(event.currentTarget);
+    const payload: Record<string, unknown> = Object.fromEntries(form.entries());
+    payload.noFollowup = form.get('noFollowup') === 'true';
+    payload.maxFollowups = Number(form.get('maxFollowups') || 0);
+    try { const result = await api.sendCampaign(payload); setNotice(`Sent ${result.sent} email(s)`); await refresh(); }
     catch (caught) { setError(message(caught)); }
   }
   async function changed(nextNotice: string) { setNotice(nextNotice); await refresh(); }
@@ -68,5 +72,5 @@ function LeadsTab({ stats, query, setQuery, onSearch, onSubmit, leads, onSelect 
 }
 
 function ImportTab({ onSubmit }: { onSubmit: (event: FormEvent<HTMLFormElement>) => void }) { return <div className="panel"><h2>Import leads</h2><p>Paste CSV content or a published Google Sheets CSV link. Duplicates by email or phone are skipped.</p><form onSubmit={onSubmit}><input name="url" type="url" placeholder="Published Google Sheets CSV URL"/><textarea name="csv" placeholder={'Or paste CSV here\nname,email,phone,category,subcategory\nAva,ava@example.com,555-0100,SaaS,HR'}/><button>Import leads</button></form></div>; }
-function AutomationTab({ onSubmit }: { onSubmit: (event: FormEvent<HTMLFormElement>) => void }) { return <div className="panel"><h2>Send a campaign</h2><p>Initial sends target uncontacted valid leads. Follow-ups target valid leads that were emailed but have not replied.</p><form onSubmit={onSubmit}><select name="mode"><option value="initial">Initial email</option><option value="followup">Follow-up email</option></select><input name="category" placeholder="Optional category filter"/><input name="before" type="date"/><input required name="subject" placeholder="Email subject"/><textarea required name="body" placeholder="Write your email…"/><button>Send now</button></form><p className="muted">Without Resend credentials, sends are safely simulated and recorded locally.</p></div>; }
+function AutomationTab({ onSubmit }: { onSubmit: (event: FormEvent<HTMLFormElement>) => void }) { return <div className="panel"><h2>Send a campaign</h2><p>Initial sends target uncontacted valid leads. Follow-ups target valid leads that were emailed but have not replied.</p><form onSubmit={onSubmit}><select name="mode"><option value="initial">Initial email</option><option value="followup">Follow-up email</option></select><input name="category" placeholder="Optional category filter"/><input name="before" type="date"/><label className="check"><input name="noFollowup" value="true" type="checkbox"/> Only leads with no follow-up</label><input name="maxFollowups" type="number" min="0" placeholder="Maximum follow-ups per lead"/><input required name="subject" placeholder="Email subject"/><textarea required name="body" placeholder="Write your email…"/><button>Send now</button></form><p className="muted">Without Resend credentials, sends are safely simulated and recorded locally.</p></div>; }
 function message(error: unknown) { return error instanceof Error ? error.message : 'Request failed'; }
