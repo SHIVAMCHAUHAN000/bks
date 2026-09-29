@@ -48,7 +48,7 @@ func (s *Server) loadImportTable(input importRequest) (importTable, int, error) 
 		data, _ := io.ReadAll(io.LimitReader(response.Body, 10<<20))
 		raw = string(data)
 	}
-	raw = strings.TrimPrefix(raw, "\\ufeff")
+	raw = strings.TrimPrefix(raw, "\xef\xbb\xbf")
 	reader := csv.NewReader(strings.NewReader(raw))
 	reader.FieldsPerRecord = -1 // spreadsheets often export rows with uneven column counts
 	reader.LazyQuotes = true
@@ -97,7 +97,7 @@ func (t importTable) columns(override map[string]string) map[string]int {
 			continue
 		}
 		for i, candidate := range t.headers {
-			if strings.TrimSpace(strings.TrimPrefix(candidate, "\\ufeff")) == strings.TrimSpace(header) {
+			if strings.TrimSpace(strings.TrimPrefix(candidate, "\xef\xbb\xbf")) == strings.TrimSpace(header) {
 				mapping[field] = i
 				break
 			}
@@ -151,7 +151,7 @@ func (t importTable) mappingByHeader(mapping map[string]int) map[string]string {
 	for _, field := range lead.ImportFields {
 		named[field] = ""
 		if index, ok := mapping[field]; ok {
-			named[field] = strings.TrimSpace(strings.TrimPrefix(t.headers[index], "\\ufeff"))
+			named[field] = strings.TrimSpace(strings.TrimPrefix(t.headers[index], "\xef\xbb\xbf"))
 		}
 	}
 	return named
@@ -169,7 +169,7 @@ func (t importTable) ignoredHeaders(mapping map[string]int) []string {
 	ignored := []string{}
 	for i, header := range t.headers {
 		if !used[i] && strings.TrimSpace(header) != "" {
-			ignored = append(ignored, strings.TrimSpace(strings.TrimPrefix(header, "\\ufeff")))
+			ignored = append(ignored, strings.TrimSpace(strings.TrimPrefix(header, "\xef\xbb\xbf")))
 		}
 	}
 	return ignored
@@ -191,7 +191,7 @@ func (s *Server) importPreviewHandler(w http.ResponseWriter, r *http.Request) {
 	sample := inputs[:min(len(inputs), 8)]
 	headers := make([]string, len(table.headers))
 	for i, header := range table.headers {
-		headers[i] = strings.TrimSpace(strings.TrimPrefix(header, "\\ufeff"))
+		headers[i] = strings.TrimSpace(strings.TrimPrefix(header, "\xef\xbb\xbf"))
 	}
 	withEmail := 0
 	for _, in := range inputs {
