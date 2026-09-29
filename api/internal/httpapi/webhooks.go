@@ -56,7 +56,7 @@ func (s *Server) resendWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event := lead.WebhookEvent{Type: payload.Type, Sender: emailAddress(payload.Data.From), Subject: payload.Data.Subject, MessageID: payload.Data.MessageID, BounceType: payload.Data.Bounce.Type, BounceMessage: payload.Data.Bounce.Message}
+	event := lead.WebhookEvent{Type: payload.Type, EmailID: payload.Data.EmailID, Sender: emailAddress(payload.Data.From), Subject: payload.Data.Subject, MessageID: payload.Data.MessageID, BounceType: payload.Data.Bounce.Type, BounceMessage: payload.Data.Bounce.Message}
 	if len(payload.Data.To) > 0 {
 		event.Recipient = emailAddress(payload.Data.To[0])
 	}
