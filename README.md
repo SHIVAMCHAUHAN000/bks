@@ -36,10 +36,10 @@ Copy the generated `whsec_…` signing secret to `RESEND_WEBHOOK_SECRET` in `api
 
 ## Included in v1
 
-- Leads with email/phone duplicate protection, categories, state, and follow-up counters
-- Manual creation, CSV / Google Sheets CSV URL import, and filters
-- Email history, reply recording, and an open-tracking pixel endpoint
-- Basic email automation with date filtering and configurable follow-up delay
+- Leads with name, organization, email, phone, designation, address and segment; duplicate protection; delete and bulk delete
+- CSV / Google Sheets import with automatic column matching, preview and per-row results
+- Inbox with the exact email sent to each lead and their replies
+- Personalised campaigns (`{{first_name}}`, `{{organization}}`, …) sent in the background with rate limiting, daily cap, unsubscribe links and progress
 - Resend integration behind a small mail service
 
 ## API layout
@@ -56,4 +56,4 @@ api/
 
 ## Google Sheets import
 
-In Google Sheets choose **File → Share → Publish to web → CSV**, then paste the generated URL in the import screen. Expected headings include `email`, `phone`, `category`, `subcategory`, and `name` (case-insensitive).
+In Google Sheets choose **File → Share → Publish to web → CSV**, then paste the generated URL in the import screen. Common headings such as Name, Company/Organization, Email, Phone/Mobile, Designation/Title, Address/City and Segment are detected automatically; other columns are ignored.

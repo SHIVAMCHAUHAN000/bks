@@ -11,14 +11,16 @@ The first row must contain column headings. Heading names are case-insensitive a
 | `email` | One of `email` or `phone` is required | Lead email address. It is trimmed and converted to lowercase. |
 | `phone` | One of `email` or `phone` is required | Lead phone number. |
 | `name` | No | Lead name. |
-| `category` | No | Used to filter campaign recipients. |
-| `subcategory` | No | Additional lead grouping information. |
+| `organization` / `company` | No | Organization name, used in `{{organization}}`. |
+| `designation` / `title` | No | Job title, used in `{{designation}}`. |
+| `address` / `city` | No | Used in `{{address}}`. |
+| `segment` / `category` / `industry` | No | Used to filter campaign recipients. |
 
 Recommended header row:
 
 ```csv
-name,email,phone,category,subcategory
-Ava,ava@example.com,555-0100,SaaS,HR
+name,organization,email,phone,designation,address,segment
+Ava Rao,Acme,ava@example.com,9876543210,CTO,Pune,SaaS
 Noah,noah@example.com,555-0101,Agency,Marketing
 Mia,,555-0102,Consulting,Finance
 ```
@@ -53,7 +55,7 @@ into a CSV export request. Publishing the sheet is still recommended because it 
 - A non-empty email or phone value must be unique. Duplicate rows are skipped.
 - Rows with neither email nor phone are skipped.
 - Invalid email syntax is stored as an invalid lead and is excluded from campaigns.
-- `name`, `category`, and `subcategory` may be empty.
+- All fields other than email/phone may be empty. Other columns are ignored, and you can change which column fills each field in the import preview.
 - Existing leads are not updated by import. To change a lead, update it through the database or add an update endpoint.
 - The import response reports the number of rows read and the number successfully inserted.
 
@@ -78,7 +80,7 @@ A direct CSV request can also be made with:
 ```bash
 curl -X POST http://localhost:8080/api/import \
   -H 'Content-Type: application/json' \
-  -d '{"csv":"name,email,phone,category,subcategory\nAva,ava@example.com,555-0100,SaaS,HR"}'
+  -d '{"csv":"name,organization,email,phone,designation,address,segment\nAva Rao,Acme,ava@example.com,9876543210,CTO,Pune,SaaS"}'
 ```
 
 The API returns an error when the URL is not HTTPS, the remote server returns a non-success HTTP status, the response is not valid CSV, or the header row has neither `email` nor `phone`.
