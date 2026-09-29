@@ -22,7 +22,7 @@ var nonAlphaNumeric = regexp.MustCompile(`[^a-z0-9]+`)
 
 // NormalizeHeader lowercases a heading and removes punctuation and BOM characters.
 func NormalizeHeader(value string) string {
-	value = strings.TrimPrefix(value, "\\ufeff")
+	value = strings.TrimPrefix(value, "\xef\xbb\xbf")
 	value = strings.ToLower(strings.TrimSpace(value))
 	return strings.TrimSpace(nonAlphaNumeric.ReplaceAllString(value, " "))
 }
